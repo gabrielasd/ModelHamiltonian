@@ -119,5 +119,32 @@ def test_4():
     answer = 2*(a+2*b) + 2*a
     assert_allclose(eigenvals[0],  answer)
 
-print(test_4())
+
+def test_ppp_api():
+    """
+    Six sites PPP model
+
+    TEST FAILS:
+    1- input charges:int --> TypeError: 'float' object is not subscriptable, line 100
+    2- index out of bound error thrown by generate_two_body_integral funtion: remove spin-basis indexing of gamma.
+    3- Shape of generated one- and two-body integrals in spatial orbitals basis don't match input norbs 
+
+    """
+    norb = 6
+    connectivity = [("C1", "C2", 1), ("C2", "C3", 1), ("C3", "C4", 1), ("C4", "C5", 1), ("C5", "C1", 1)]
+    u_matrix= np.ones(norb)
+    g_matrix = np.arange(36).reshape((norb,norb))
+    charges = np.ones(norb)
+    
+    ham = HamPPP(connectivity, alpha=0., beta=-2.5, u_onsite=u_matrix, gamma=g_matrix, charges=charges)
+    ecore = ham.generate_zero_body_integral()
+    h = ham.generate_one_body_integral(sym=1, basis='spatial basis', dense=True)
+    v = ham.generate_two_body_integral(sym=1, basis='spatial basis', dense=True)
+
+    print(h.shape)
+    print(h.shape)
+    assert h.shape[0] == 6
+    assert v.shape[0] == 6
+
+print(test_ppp_api())
 # print(test_1())

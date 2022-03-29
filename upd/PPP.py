@@ -96,6 +96,7 @@ class HamPPP(HamiltonianAPI):
             for p in range(self.n_sites):
                 for q in range(self.n_sites):
                     if p != q:
+                        # FIXME: TypeError: 'float' object is not subscriptable if cherges:int
                         one_body_term[p, p] -= 2 * self.gamma[p, q] * self.charges[p]
                         one_body_term[q, q] -= 2 * self.gamma[p, q] * self.charges[q]
         if basis == 'spatial basis':
@@ -124,6 +125,7 @@ class HamPPP(HamiltonianAPI):
                 v[i, j] = self.u_onsite[p]
 
         if self.gamma is not None:
+            # FIXED: index out of bound error
             for p in range(n_sp):
                 for q in range(n_sp):
                     if p != q:
@@ -131,13 +133,13 @@ class HamPPP(HamiltonianAPI):
                         v[i, j] = self.gamma[p, q]
 
                         i, j = convert_indices(Nv, p, q + n_sp, p, q + n_sp)
-                        v[i, j] = self.gamma[p, q + n_sp]
+                        v[i, j] = self.gamma[p, q] # q + n_sp
 
                         i, j = convert_indices(Nv, p + n_sp, q, p + n_sp, q)
-                        v[i, j] = self.gamma[p + n_sp, q]
+                        v[i, j] = self.gamma[p, q] #p + n_sp
 
                         i, j = convert_indices(Nv, p + n_sp, q + n_sp, p + n_sp, q + n_sp)
-                        v[i, j] = self.gamma[p + n_sp, q + n_sp]
+                        v[i, j] = self.gamma[p, q] #p + n_sp, q + n_sp
 
         v *= 0.5
 
